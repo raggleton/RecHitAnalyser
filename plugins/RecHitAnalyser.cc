@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    JetCrap/L1RecHitTreeProducer
-// Class:      L1RecHitTreeProducer
+// Package:    JetCrap/RecHitAnalyser
+// Class:      RecHitAnalyser
 //
-/**\class L1RecHitTreeProducer L1RecHitTreeProducer.cc JetCrap/L1RecHitTreeProducer/plugins/L1RecHitTreeProducer.cc
+/**\class RecHitAnalyser RecHitAnalyser.cc JetCrap/RecHitAnalyser/plugins/RecHitAnalyser.cc
 
  Description: [one line class summary]
 
@@ -55,10 +55,10 @@ typedef edm::SortedCollection<HFRecHit> HFRecHitCollection;
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
-class L1RecHitTreeProducer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class RecHitAnalyser : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
-      explicit L1RecHitTreeProducer(const edm::ParameterSet&);
-      ~L1RecHitTreeProducer();
+      explicit RecHitAnalyser(const edm::ParameterSet&);
+      ~RecHitAnalyser();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -96,7 +96,7 @@ class L1RecHitTreeProducer : public edm::one::EDAnalyzer<edm::one::SharedResourc
 //
 // constructors and destructor
 //
-L1RecHitTreeProducer::L1RecHitTreeProducer(const edm::ParameterSet& iConfig)
+RecHitAnalyser::RecHitAnalyser(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
@@ -114,7 +114,7 @@ L1RecHitTreeProducer::L1RecHitTreeProducer(const edm::ParameterSet& iConfig)
 }
 
 
-L1RecHitTreeProducer::~L1RecHitTreeProducer()
+RecHitAnalyser::~RecHitAnalyser()
 {
 
    // do anything here that needs to be done at desctruction time
@@ -129,7 +129,7 @@ L1RecHitTreeProducer::~L1RecHitTreeProducer()
 
 // ------------ method called for each event  ------------
 void
-L1RecHitTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+RecHitAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
   using std::cout;
@@ -176,7 +176,7 @@ L1RecHitTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 }
 
 
-void L1RecHitTreeProducer::storeHBHERecHits(edm::Handle<HBHERecHitCollection> recHits) {
+void RecHitAnalyser::storeHBHERecHits(edm::Handle<HBHERecHitCollection> recHits) {
   using namespace std;
   for (auto& rh: *recHits) {
     cout << rh << endl;
@@ -185,7 +185,7 @@ void L1RecHitTreeProducer::storeHBHERecHits(edm::Handle<HBHERecHitCollection> re
   }
 }
 
-void L1RecHitTreeProducer::storeHFRecHits(edm::Handle<HFRecHitCollection> recHits) {
+void RecHitAnalyser::storeHFRecHits(edm::Handle<HFRecHitCollection> recHits) {
   using namespace std;
   for (auto& rh: *recHits) {
     cout << rh << endl;
@@ -194,7 +194,7 @@ void L1RecHitTreeProducer::storeHFRecHits(edm::Handle<HFRecHitCollection> recHit
   }
 }
 
-void L1RecHitTreeProducer::storePFRecHits(edm::Handle<reco::PFRecHitCollection> recHits) {
+void RecHitAnalyser::storePFRecHits(edm::Handle<reco::PFRecHitCollection> recHits) {
   using namespace std;
   for (auto& rh: *recHits) {
     cout << rh << endl;
@@ -204,19 +204,19 @@ void L1RecHitTreeProducer::storePFRecHits(edm::Handle<reco::PFRecHitCollection> 
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-L1RecHitTreeProducer::beginJob()
+RecHitAnalyser::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-L1RecHitTreeProducer::endJob()
+RecHitAnalyser::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-L1RecHitTreeProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+RecHitAnalyser::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -225,4 +225,4 @@ L1RecHitTreeProducer::fillDescriptions(edm::ConfigurationDescriptions& descripti
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(L1RecHitTreeProducer);
+DEFINE_FWK_MODULE(RecHitAnalyser);

@@ -15,7 +15,7 @@ process.source = cms.Source("PoolSource",
     )
 )
 
-process.recHitAnalyser = cms.EDAnalyzer('L1RecHitTreeProducer',
+process.recHitAnalyser = cms.EDAnalyzer('RecHitAnalyser',
     recHitTokenHBHE=cms.untracked.InputTag("hbhereco", ""),
     recHitTokenHF=cms.untracked.InputTag("hfreco", ""),
     pfRecHitTokenHBHE=cms.untracked.InputTag("particleFlowRecHitHBHE", "Cleaned"),
