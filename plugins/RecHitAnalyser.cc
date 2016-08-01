@@ -40,14 +40,11 @@
 #include "DataFormats/ParticleFlowReco/interface/PFRecHit.h"
 
 #include "DataFormats/Common/interface/SortedCollection.h"
-#include "DataFormats/HcalRecHit/interface/HFRecHit.h"
-#include "DataFormats/HcalRecHit/interface/HBHERecHit.h"
+#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 
 //
 // class declaration
 //
-typedef edm::SortedCollection<HBHERecHit> HBHERecHitCollection;
-typedef edm::SortedCollection<HFRecHit> HFRecHitCollection;
 
 // If the analyzer does not use TFileService, please remove
 // the template argument to the base class so the class inherits
