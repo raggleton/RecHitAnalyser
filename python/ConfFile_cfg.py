@@ -11,7 +11,9 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
     fileNames = cms.untracked.vstring(
-        'file:276242_RECO.root'
+        'file:bad_RECO_C.root',
+        'file:bad_RECO_D.root'
+        # 'file:good_RECO.root'
     )
 )
 
@@ -31,5 +33,5 @@ process.schedule = cms.Schedule(process.p, process.endjob_step)
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("rechits.root")
+    fileName = cms.string("rechits_bad.root")
 )

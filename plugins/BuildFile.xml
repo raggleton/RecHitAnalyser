@@ -6,4 +6,6 @@
 <use name="DataFormats/HcalRecHit"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="FWCore/ServiceRegistry"/>
+<use name="boost"/>
+<use name="root"/>
 <flags EDM_PLUGIN="1"/>

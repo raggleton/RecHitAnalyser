@@ -42,6 +42,9 @@
 #include "DataFormats/Common/interface/SortedCollection.h"
 #include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
 
+#include <boost/lexical_cast.hpp>
+
+using boost::lexical_cast;
 //
 // class declaration
 //
@@ -53,33 +56,33 @@
 // This will improve performance in multithreaded jobs.
 
 class RecHitAnalyser : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
-   public:
-      explicit RecHitAnalyser(const edm::ParameterSet&);
-      ~RecHitAnalyser();
+  public:
+    explicit RecHitAnalyser(const edm::ParameterSet&);
+    ~RecHitAnalyser();
 
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
+  private:
+    virtual void beginJob() override;
+    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
+    virtual void endJob() override;
 
-   private:
-      virtual void beginJob() override;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-      virtual void endJob() override;
+    void storeHFRecHits(edm::Handle<HFRecHitCollection> recHits);
+    void storeHBHERecHits(edm::Handle<HBHERecHitCollection> recHits);
+    void storePFRecHits(edm::Handle<reco::PFRecHitCollection> recHits);
 
-      void storeHFRecHits(edm::Handle<HFRecHitCollection> recHits);
-      void storeHBHERecHits(edm::Handle<HBHERecHitCollection> recHits);
-      void storePFRecHits(edm::Handle<reco::PFRecHitCollection> recHits);
+    // ----------member data ---------------------------
 
-      // ----------member data ---------------------------
+    edm::Service<TFileService> fs_;
 
-      edm::Service<TFileService> fs_;
-      TH2F * recHitMap_;
-      TH2F * pfRecHitMap_;
+    TH2F * recHitMap_;
+    TH2F * pfRecHitMap_;
 
-      // EDM input tags
-      edm::EDGetTokenT<HFRecHitCollection> recHitTokenHF_;
-      edm::EDGetTokenT<HBHERecHitCollection> recHitTokenHBHE_;
-      edm::EDGetTokenT<reco::PFRecHitCollection> pfRecHitTokenHBHE_;
-      edm::EDGetTokenT<reco::PFRecHitCollection> pfRecHitTokenHF_;
+    // EDM input tags
+    edm::EDGetTokenT<HFRecHitCollection> recHitTokenHF_;
+    edm::EDGetTokenT<HBHERecHitCollection> recHitTokenHBHE_;
+    edm::EDGetTokenT<reco::PFRecHitCollection> pfRecHitTokenHBHE_;
+    edm::EDGetTokenT<reco::PFRecHitCollection> pfRecHitTokenHF_;
 };
 
 //
@@ -105,9 +108,6 @@ RecHitAnalyser::RecHitAnalyser(const edm::ParameterSet& iConfig)
   pfRecHitTokenHBHE_ = consumes<reco::PFRecHitCollection>(iConfig.getUntrackedParameter("pfRecHitTokenHBHE", edm::InputTag("")));
   pfRecHitTokenHF_ = consumes<reco::PFRecHitCollection>(iConfig.getUntrackedParameter("pfRecHitTokenHF", edm::InputTag("")));
 
-  recHitMap_ = fs_->make<TH2F>("recHitMap", "Energy in GeV;ieta;iphi", 85, -42, 43, 73, 0, 73);
-  pfRecHitMap_ = fs_->make<TH2F>("pfRecHitMap", "Energy in GeV;ieta;iphi", 85, -42, 43, 73, 0, 73);
-
 }
 
 
@@ -132,17 +132,22 @@ RecHitAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   using std::cout;
   using std::endl;
 
+  unsigned             run = iEvent.id().run();
+  unsigned long long   event = iEvent.id().event();
+  unsigned             lumi = iEvent.luminosityBlock();
+
+  std::string evtName = lexical_cast<std::string>(run) + "_" + lexical_cast<std::string>(lumi) + "_" + lexical_cast<std::string>(event);
+  TFileDirectory evtDir_ = fs_->mkdir(evtName);
+
+  std::string plotTitle = "run"+lexical_cast<std::string>(run) + " ls" + lexical_cast<std::string>(lumi) + " evt" + lexical_cast<std::string>(event);
+  recHitMap_ = evtDir_.make<TH2F>("recHitMap", (plotTitle+" (Energy in GeV);ieta;iphi").c_str(), 85, -42, 43, 73, 0, 73);
+  pfRecHitMap_ = evtDir_.make<TH2F>("pfRecHitMap", (plotTitle+" (Energy in GeV);ieta;iphi").c_str(), 85, -42, 43, 73, 0, 73);
+
   Handle<HBHERecHitCollection> recHitsHBHE;
   iEvent.getByToken(recHitTokenHBHE_, recHitsHBHE);
 
   Handle<HFRecHitCollection> recHitsHF;
   iEvent.getByToken(recHitTokenHF_, recHitsHF);
-
-  Handle<reco::PFRecHitCollection> pfRecHitsHBHE;
-  iEvent.getByToken(pfRecHitTokenHBHE_, pfRecHitsHBHE);
-
-  Handle<reco::PFRecHitCollection> pfRecHitsHF;
-  iEvent.getByToken(pfRecHitTokenHF_, pfRecHitsHF);
 
   if (recHitsHBHE.isValid()) {
     storeHBHERecHits(recHitsHBHE);
@@ -156,6 +161,12 @@ RecHitAnalyser::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   } else {
     cout << "Not analysing HF" << endl;
   }
+
+  Handle<reco::PFRecHitCollection> pfRecHitsHBHE;
+  iEvent.getByToken(pfRecHitTokenHBHE_, pfRecHitsHBHE);
+
+  Handle<reco::PFRecHitCollection> pfRecHitsHF;
+  iEvent.getByToken(pfRecHitTokenHF_, pfRecHitsHF);
 
   if (pfRecHitsHBHE.isValid()) {
     cout << "HBHE PF RecHits OK" << endl;
